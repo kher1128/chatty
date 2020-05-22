@@ -132,22 +132,23 @@ public class Addressbook {
             parameters = split[1].split(" ");
             parameter = split[1].trim();
         }
-        if (command.equals("get")) {
-            return commandGet(parameters);
-        } else if (command.equals("add")) {
-            return commandAdd(parameters);
-        } else if (command.equals("set")) {
-            return commandSet(parameters);
-        } else if (command.equals("remove")) {
-            return commandRemove(parameters);
-        } else if (command.equals("renameCategory")) {
-            return commandRenameCategory(parameters);
-        } else if (command.equals("removeCategory")) {
-            return commandRemoveCategory(parameters);
-        } else if (command.equals("change")) {
-            return commandChange(parameter);
-        } else if (command.equals("info")) {
-            return commandInfo();
+        switch(command) {
+        case "get":
+        	return commandGet(parameters);
+        case "add":
+        	return commandAdd(parameters);
+        case "set":
+        	return commandSet(parameters);
+        case "remove":
+        	return commandRemove(parameters);
+        case "renameCategory":
+        	return commandRenameCategory(parameters);
+        case "removeCategory":
+        	return commandRemoveCategory(parameters);
+        case "change":
+        	 return commandChange(parameter);
+        case "info":
+        	return commandInfo();
         }
         return "Invalid command.";
     }

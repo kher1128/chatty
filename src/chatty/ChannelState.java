@@ -210,39 +210,75 @@ public class ChannelState {
     private void updateInfo() {
         String result = "";
         String sep = "|";
-        if (slowMode == SLOWMODE_ON_INVALID || slowMode > 86400) {
-            result += "Slow: >day";
-        } else if (slowMode > 999) {
-            result += "Slow: "+DateTime.duration(slowMode*1000, 1, 0);
-        } else if (slowMode > 0) {
-            result += "Slow: "+slowMode;
-        }
-        if (subMode) {
-            result = StringUtil.append(result, sep, "Sub");
-        }
-        if (followersOnly == SLOWMODE_ON_INVALID) {
-            result = StringUtil.append(result, sep, "Followers: ?");
-        } else if (followersOnly > 0) {
-            result = StringUtil.append(result, sep, "Followers: "+DateTime.duration((long)followersOnly*60*1000, 1, DateTime.S, DateTime.Formatting.COMPACT));
-        } else if (followersOnly == 0) {
-            result = StringUtil.append(result, sep, "Followers");
-        }
-        if (r9kMode) {
-            result = StringUtil.append(result, sep, "r9k");
-        }
-        if (emoteOnly) {
-            result = StringUtil.append(result, sep, "EmoteOnly");
-        }
-        if (hosting != null && !hosting.isEmpty()) {
-            result = StringUtil.append(result, sep, "Hosting: "+hosting);
-        }
-        if (lang != null && !lang.isEmpty()) {
-            result = StringUtil.append(result, sep, lang);
-        }
+        result += updateSlowMode();
+        result = updateSubMode(sep);
+        result = updateFollowersOnly(sep);
+        result = updateR9kMode(sep);
+        result = updateEmoteOnly(sep);
+        result = updateHosting(sep);
+        result = updateLang(sep);
         if (!result.isEmpty()) {
             result = "["+result+"]";
         }
         info = result;
     }
     
+	private String updateSlowMode() {
+		String result ="";
+		if (slowMode == SLOWMODE_ON_INVALID || slowMode > 86400) {
+            result += "Slow: >day";
+        } else if (slowMode > 999) {
+            result += "Slow: "+DateTime.duration(slowMode*1000, 1, 0);
+        } else if (slowMode > 0) {
+            result += "Slow: "+slowMode;
+        }
+		return result;
+	}
+	
+	private String updateSubMode(String sep) {
+		String result="";
+		if (subMode) {
+            result = StringUtil.append(result, sep, "Sub");
+        }
+		return result;
+	}
+	private String updateFollowersOnly( String sep) {
+		String result="";
+		if (followersOnly == SLOWMODE_ON_INVALID) {
+            result = StringUtil.append(result, sep, "Followers: ?");
+        } else if (followersOnly > 0) {
+            result = StringUtil.append(result, sep, "Followers: "+DateTime.duration((long)followersOnly*60*1000, 1, DateTime.S, DateTime.Formatting.COMPACT));
+        } else if (followersOnly == 0) {
+            result = StringUtil.append(result, sep, "Followers");
+        }
+		return result;
+	}
+	private String updateR9kMode(String sep) {
+		String result="";
+		if (r9kMode) {
+            result = StringUtil.append(result, sep, "r9k");
+        }
+		return result;
+	}
+	private String updateEmoteOnly(String sep) {
+		String result="";
+		if (emoteOnly) {
+            result = StringUtil.append(result, sep, "EmoteOnly");
+        }
+		return result;
+	}
+	private String updateHosting(String sep) {
+		String result="";
+		if (hosting != null && !hosting.isEmpty()) {
+            result = StringUtil.append(result, sep, "Hosting: "+hosting);
+        }
+		return result;
+	}
+	private String updateLang(String sep) {
+		String result="";
+		if (lang != null && !lang.isEmpty()) {
+            result = StringUtil.append(result, sep, lang);
+        }
+		return result;
+	}
 }

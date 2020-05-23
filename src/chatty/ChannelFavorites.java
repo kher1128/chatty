@@ -310,19 +310,26 @@ public class ChannelFavorites {
         public static Favorite fromList(List input, String channel) {
             long lastJoined = ((Number)input.get(0)).longValue();
             boolean isFavorite = (Boolean)input.get(1);
-            if (input.size() == 2) {
-                return new Favorite(Room.createRegular(channel), lastJoined, isFavorite);
-            } else if (input.size() == 3) {
-                String ownerId = (String)input.get(2);
-                return new Favorite(Room.createRegularWithId(channel, ownerId), lastJoined, isFavorite);
-            } else if (input.size() == 4) {
-                String name = (String)input.get(2);
-                String ownerStream = (String)input.get(3);
-                Room room = Room.createFromChannel(channel, name, Helper.toChannel(ownerStream));
-                if (room != null) {
-                    return new Favorite(room, lastJoined, isFavorite);
-                }
+            boolean is_size_2= (input.size() == 2);
+            boolean is_size_3= (input.size() == 3);
+            boolean is_size_4= (input.size() == 4);
+            if(is_size_2 || is_size_3 || is_size_4 ) {
+            	Room room=null;
+            	 if (is_size_2) {
+            		 room=Room.createRegular(channel);
+                 } else if (is_size_3) {
+                     String ownerId = (String)input.get(2);
+                     room=Room.createRegularWithId(channel, ownerId);
+                 } else if (is_size_4) {
+                     String name = (String)input.get(2);
+                     String ownerStream = (String)input.get(3);
+                     room = Room.createFromChannel(channel, name, Helper.toChannel(ownerStream));
+                 }
+            	 if (room != null) {
+                     return new Favorite(room, lastJoined, isFavorite);
+                 }
             }
+           
             return null;
         }
         

@@ -61,22 +61,12 @@ public class ChannelState {
      */
     public synchronized boolean reset() {
         boolean changed = false;
-        if (setSubMode(false)) {
-            changed = true;
-        }
-        if (setSlowMode(-1)) {
-            changed = true;
-        }
-        if (setHosting(null)) {
-            changed = true;
-        }
-        if (setR9kMode(false)) {
-            changed = true;
-        }
-        if (setEmoteOnly(false)) {
-            changed = true;
-        }
-        if (setFollowersOnly(-1)) {
+        if (setSubMode(false) 
+        		|| setSlowMode(-1) 
+        		|| setHosting(null) 
+        		|| setR9kMode(false) 
+        		|| setEmoteOnly(false) 
+        		|| setFollowersOnly(-1)) {
             changed = true;
         }
         return changed;

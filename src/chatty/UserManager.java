@@ -392,13 +392,15 @@ public class UserManager {
      */
     protected synchronized List<User> modsListReceived(Room room, List<String> modsList) {
         // Demod everyone on the channel
-        Map<String,User> usersToDemod = getUsersByChannel(room.getChannel());
-        for (User user : usersToDemod.values()) {
-            user.setModerator(false);
-        }
+        demodEveryOnChannel(room);
         // Mod everyone in the list
         LOGGER.info("Setting users as mod for "+room.getChannel()+": "+modsList);
-        List<User> changedUsers = new ArrayList<>();
+        List<User> changedUsers = extracted(room, modsList);
+        return changedUsers;
+    }
+
+	private List<User> extracted(Room room, List<String> modsList) {
+		List<User> changedUsers = new ArrayList<>();
         for (String userName : modsList) {
             if (Helper.isValidChannel(userName)) {
                 User user = getUser(room, userName);
@@ -408,8 +410,15 @@ public class UserManager {
                 changedUsers.add(user);
             }
         }
-        return changedUsers;
-    }
+		return changedUsers;
+	}
+
+	private void demodEveryOnChannel(Room room) {
+		Map<String,User> usersToDemod = getUsersByChannel(room.getChannel());
+        for (User user : usersToDemod.values()) {
+            user.setModerator(false);
+        }
+	}
     
     public static interface UserManagerListener {
         public void userUpdated(User user);

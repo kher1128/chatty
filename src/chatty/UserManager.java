@@ -214,42 +214,12 @@ public class UserManager {
         if (user == null) {
             // Capitalize name if enabled (might still be overwritten by setting
             // displayNick from tags)
-            String capitalizedName = name;
-            if (capitalizedNames) {
-                capitalizedName = name.substring(0, 1).toUpperCase(Locale.ROOT) + name.substring(1);
-            }
+            String capitalizedName = getCapitalizedName(name);
             user = new User(capitalizedName, room);
-            user.setUsercolorManager(usercolorManager);
-            user.setAddressbook(addressbook);
-            user.setUsericonManager(usericonManager);
-            if (customNamesManager != null) {
-                user.setCustomNick(customNamesManager.getCustomName(name));
-            }
-            if (botNameManager != null && botNameManager.isBotName(room.getOwnerChannel(), name)) {
-                user.setBot(true);
-            }
-            // Initialize some values if present for this name
-            if (cachedColors.containsKey(name)) {
-                user.setColor(cachedColors.get(name));
-            }
+            user = setBasicSettings(room, name, user);
+    		// Initialize some values if present for this name
             if (name.equals(localUsername)) {
-                /**
-                 * Set initial data for local user that is globally valid. This
-                 * data would have been received from the GLOBALUSERSTATE
-                 * command which may not be send after every join or sent
-                 * message.
-                 */
-                user.setAdmin(specialUser.isAdmin());
-                user.setStaff(specialUser.isStaff());
-                user.setTurbo(specialUser.hasTurbo());
-                user.setId(specialUser.getId());
-                user.setLocalUser(true);
-                if (!specialUser.hasDefaultColor()) {
-                    user.setColor(specialUser.getPlainColor());
-                }
-                if (specialUser.hasDisplayNickSet()) {
-                    user.setDisplayNick(specialUser.getDisplayNick());
-                }
+            	user = setInitialSettings(user);
             }
             // Put User into the map for the channel
             getUsersByChannel(room.getChannel()).put(name, user);
@@ -257,6 +227,51 @@ public class UserManager {
         return user;
     }
     
+	private String getCapitalizedName(String name) {
+		String capitalizedName = name;
+		if (capitalizedNames) {
+		    capitalizedName = name.substring(0, 1).toUpperCase(Locale.ROOT) + name.substring(1);
+		}
+		return capitalizedName;
+	}
+    
+	private User setBasicSettings(Room room, String name, User user) {
+		user.setUsercolorManager(usercolorManager);
+		user.setAddressbook(addressbook);
+		user.setUsericonManager(usericonManager);
+		if (customNamesManager != null) {
+		    user.setCustomNick(customNamesManager.getCustomName(name));
+		}
+		if (botNameManager != null && botNameManager.isBotName(room.getOwnerChannel(), name)) {
+		    user.setBot(true);
+		}
+		if (cachedColors.containsKey(name)) {
+		    user.setColor(cachedColors.get(name));
+		}
+		return user;
+	}
+	
+	private User setInitialSettings(User user) {
+		 /**
+         * Set initial data for local user that is globally valid. This
+         * data would have been received from the GLOBALUSERSTATE
+         * command which may not be send after every join or sent
+         * message.
+         */
+		user.setAdmin(specialUser.isAdmin());
+		user.setStaff(specialUser.isStaff());
+		user.setTurbo(specialUser.hasTurbo());
+		user.setId(specialUser.getId());
+		user.setLocalUser(true);
+		if (!specialUser.hasDefaultColor()) {
+		    user.setColor(specialUser.getPlainColor());
+		}
+		if (specialUser.hasDisplayNickSet()) {
+		    user.setDisplayNick(specialUser.getDisplayNick());
+		}
+		return user;
+	}
+	
     /**
      * Searches all channels for the given username and returns a Map with
      * all channels the username was found in and the associated User objects.

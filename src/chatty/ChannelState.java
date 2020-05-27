@@ -210,7 +210,7 @@ public class ChannelState {
     private void updateInfo() {
         String result = "";
         String sep = "|";
-        result += updateSlowMode();
+        result = updateSlowMode(result);
         result = updateSubMode(result, sep);
         result = updateFollowersOnly(result, sep);
         result = updateR9kMode(result, sep);
@@ -223,8 +223,7 @@ public class ChannelState {
         info = result;
     }
     
-	private String updateSlowMode() {
-		String result ="";
+	private String updateSlowMode(String result) {
 		if (slowMode == SLOWMODE_ON_INVALID || slowMode > 86400) {
             result += "Slow: >day";
         } else if (slowMode > 999) {

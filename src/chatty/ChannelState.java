@@ -211,12 +211,12 @@ public class ChannelState {
         String result = "";
         String sep = "|";
         result += updateSlowMode();
-        result = updateSubMode(sep);
-        result = updateFollowersOnly(sep);
-        result = updateR9kMode(sep);
-        result = updateEmoteOnly(sep);
-        result = updateHosting(sep);
-        result = updateLang(sep);
+        result = updateSubMode(result, sep);
+        result = updateFollowersOnly(result, sep);
+        result = updateR9kMode(result, sep);
+        result = updateEmoteOnly(result, sep);
+        result = updateHosting(result, sep);
+        result = updateLang(result, sep);
         if (!result.isEmpty()) {
             result = "["+result+"]";
         }
@@ -235,15 +235,13 @@ public class ChannelState {
 		return result;
 	}
 	
-	private String updateSubMode(String sep) {
-		String result="";
+	private String updateSubMode(String result, String sep) {
 		if (subMode) {
             result = StringUtil.append(result, sep, "Sub");
         }
 		return result;
 	}
-	private String updateFollowersOnly( String sep) {
-		String result="";
+	private String updateFollowersOnly(String result, String sep) {
 		if (followersOnly == SLOWMODE_ON_INVALID) {
             result = StringUtil.append(result, sep, "Followers: ?");
         } else if (followersOnly > 0) {
@@ -253,29 +251,25 @@ public class ChannelState {
         }
 		return result;
 	}
-	private String updateR9kMode(String sep) {
-		String result="";
+	private String updateR9kMode(String result, String sep) {
 		if (r9kMode) {
             result = StringUtil.append(result, sep, "r9k");
         }
 		return result;
 	}
-	private String updateEmoteOnly(String sep) {
-		String result="";
+	private String updateEmoteOnly(String result, String sep) {
 		if (emoteOnly) {
             result = StringUtil.append(result, sep, "EmoteOnly");
         }
 		return result;
 	}
-	private String updateHosting(String sep) {
-		String result="";
+	private String updateHosting(String result, String sep) {
 		if (hosting != null && !hosting.isEmpty()) {
             result = StringUtil.append(result, sep, "Hosting: "+hosting);
         }
 		return result;
 	}
-	private String updateLang(String sep) {
-		String result="";
+	private String updateLang(String result, String sep) {
 		if (lang != null && !lang.isEmpty()) {
             result = StringUtil.append(result, sep, lang);
         }

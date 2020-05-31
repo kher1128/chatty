@@ -115,6 +115,22 @@ public abstract class Irc {
         LOGGER.warning(idPrefix+message);
     }
     
+    public String getNick() {
+    	return nick;
+    }
+    
+    protected void setNick(String nick) {
+    	this.nick = nick;
+    }
+    
+    public String getPass() {
+    	return pass;
+    }
+    
+    protected void setPass(String pass) {
+    	this.pass = pass;
+    }
+    
     /**
      * Set a new connection state.
      * 
@@ -644,4 +660,6 @@ public abstract class Irc {
     void onCommand(String nick, String command, String parameter, String text, MsgTags tags) { }
     
     void onUsernotice(String channel, String message, MsgTags tags) { }
+    
+    
 }

@@ -168,10 +168,8 @@ public class Helper {
      * @return The channelname with leading #, or null if channel was invalid.
      */
     public static String toValidChannel(String channel) {
-        if (channel == null) {
-            return null;
-        }
-        if (!isValidChannel(channel)) {
+    	boolean isNotValid = (channel == null) || !isValidChannel(channel);  
+        if (isNotValid) {
             return null;
         }
         if (!channel.startsWith("#")) {
@@ -475,7 +473,7 @@ public class Helper {
     
     
     
-    public static final void main(String[] args) {
+    public static final void main(String[] args) throws Exception {
 //        System.out.println(htmlspecialchars_encode("< >"));
 //        System.out.println(shortenTo("abcd", 0));
 //        System.out.println(shortenTo("abcd", 1));
@@ -649,10 +647,10 @@ public class Helper {
      * @param serverAndPort 
      * @return The parsed port, or -1 if invalid
      */
-    public static int getPort(String serverAndPort) {
+    public static int getPort(String serverAndPort) throws Exception{
         int p = serverAndPort.lastIndexOf(":");
         if (p == -1) {
-            return -1;
+            throw NotExistServerException();
         }
         String port = serverAndPort.substring(p+1);
         try {
@@ -662,7 +660,12 @@ public class Helper {
         }
     }
     
-    private static String makeBanInfoDuration(long duration) {
+    private static Exception NotExistServerException() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private static String makeBanInfoDuration(long duration) {
         if (duration < 120) {
             return String.format("%ds", duration);
         }

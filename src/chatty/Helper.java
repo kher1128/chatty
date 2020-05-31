@@ -33,7 +33,7 @@ public class Helper {
     
     private static final Logger LOGGER = Logger.getLogger(Helper.class.getName());
     
-    public static final DecimalFormat VIEWERCOUNT_FORMAT = new DecimalFormat();
+    private static final DecimalFormat VIEWERCOUNT_FORMAT = new DecimalFormat();
     
     public static String formatViewerCount(int viewerCount) {
         return VIEWERCOUNT_FORMAT.format(viewerCount);

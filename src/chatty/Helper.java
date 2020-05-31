@@ -427,11 +427,6 @@ public class Helper {
         return subList;
     }
     
-    public static void unhandledException() {
-        String[] a = new String[0];
-        String b = a[1];
-    }
-    
     public static boolean arrayContainsInt(int[] array, int test) {
         for (int i = 0; i < array.length; i++) {
             if (array[i] == test) {

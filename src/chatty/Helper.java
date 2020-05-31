@@ -356,39 +356,39 @@ public class Helper {
         TAGS_VALUE_DECODE = new Replacer(replacements2);
     }
     
-    public static String tagsvalue_decode(String s) {
-        if (s == null) {
+    public static String tagsvalue_decode(String string) {
+        if (string == null) {
             return null;
         }
-        return TAGS_VALUE_DECODE.replace(s);
+        return TAGS_VALUE_DECODE.replace(string);
     }
     
-    public static String tagsvalue_encode(String s) {
-        if (s == null) {
+    public static String tagsvalue_encode(String string) {
+        if (string == null) {
             return null;
         }
-        return TAGS_VALUE_ENCODE.replace(s);
+        return TAGS_VALUE_ENCODE.replace(string);
     }
     
-    public static String htmlspecialchars_decode(String s) {
-        if (s == null) {
+    public static String htmlspecialchars_decode(String string) {
+        if (string == null) {
             return null;
         }
-        return HTMLSPECIALCHARS_DECODE.replace(s);
+        return HTMLSPECIALCHARS_DECODE.replace(string);
     }
     
-    public static String htmlspecialchars_encode(String s) {
-        if (s == null) {
+    public static String htmlspecialchars_encode(String string) {
+        if (string == null) {
             return null;
         }
-        return HTMLSPECIALCHARS_ENCODE.replace(s);
+        return HTMLSPECIALCHARS_ENCODE.replace(string);
     }
     
-    public static String prepareForHtml(String s) {
-        if (s == null) {
+    public static String prepareForHtml(String string) {
+        if (string == null) {
             return null;
         }
-        return htmlspecialchars_encode(s).replaceAll(" ", "&nbsp;").replaceAll("\n", "<br />");
+        return htmlspecialchars_encode(string).replaceAll(" ", "&nbsp;").replaceAll("\n", "<br />");
     }
     
     private static final Pattern EMOJI_VARIATION_SELECTOR = Pattern.compile("[\uFE0E\uFE0F]");
@@ -456,9 +456,9 @@ public class Helper {
             return null;
         }
         try {
-            int a = Integer.parseInt(split[0]);
-            int b = Integer.parseInt(split[1]);
-            return new IntegerPair(a, b);
+            int firstIDX = Integer.parseInt(split[0]);
+            int secondIDX = Integer.parseInt(split[1]);
+            return new IntegerPair(firstIDX, secondIDX);
         } catch (NumberFormatException ex) {
             return null;
         }

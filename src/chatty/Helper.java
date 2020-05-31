@@ -238,7 +238,17 @@ public class Helper {
     public static String makeDisconnectReason(int reason, String reasonMessage) {
         String result = "";
         
-        switch (reason) {
+        result = kindOfDisconnect(reason, reasonMessage, result);
+        
+        if (!result.isEmpty()) {
+            result = " ("+result+")";
+        }
+        
+        return result;
+    }
+
+	private static String kindOfDisconnect(int reason, String reasonMessage, String result) {
+		switch (reason) {
             case Irc.ERROR_UNKNOWN_HOST:
                 result = Language.getString("chat.error.unknownHost");
                 break;
@@ -261,13 +271,8 @@ public class Helper {
                 result = reasonMessage;
                 break;
         }
-        
-        if (!result.isEmpty()) {
-            result = " ("+result+")";
-        }
-        
-        return result;
-    }
+		return result;
+	}
     
 
     /**

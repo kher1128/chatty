@@ -21,15 +21,19 @@ public class ErrorHandler implements UncaughtExceptionHandler {
     @Override
     public void uncaughtException(Thread t, Throwable e) {
         counter.increase();
+        boolean isUnknownExcpetionInThread = (e == null && t != null);
+        boolean isUnknownException = (e == null && t == null);
         if (counter.getCount(false) > 1000) {
             LOGGER.warning("Over 1000 errors in a minute, exiting application.");
             System.exit(1);
         }
-        if (e == null && t != null) {
+        
+		if (isUnknownExcpetionInThread) {
             LOGGER.severe("Unknown exception in thread "+t.toString());
             return;
         }
-        if (e == null && t == null) {
+        
+		if (isUnknownException) {
             LOGGER.severe("Unknown exception");
             return;
         }

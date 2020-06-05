@@ -128,7 +128,7 @@ public class Connection implements Runnable {
         connected = true;
         irc.connected(socket.getInetAddress().toString(),address.getPort());
         
-        StringBuilder b = new StringBuilder();
+        StringBuilder strbuild = new StringBuilder();
         boolean previousWasCR = false;
         String receivedLine = null;
         while (true) {
@@ -151,12 +151,12 @@ public class Connection implements Runnable {
                     //System.out.println("\\n");
                     if (previousWasCR) {
                         // Take buffer as line and reset
-                        receivedLine = b.toString();
-                        b.setLength(0);
+                        receivedLine = strbuild.toString();
+                        strbuild.setLength(0);
                         previousWasCR = false;
                     }
                 } else {
-                    b.append((char)c);
+                    strbuild.append((char)c);
                     previousWasCR = false;
                     //System.out.print((char)c);
                 }
@@ -191,6 +191,7 @@ public class Connection implements Runnable {
     /**
      * Notifies the activity tracker that there was activity on the connection.
      */
+    //Smell
     private void activity() {
         connectionCheckedCount = 0;
         if (debugCounter != -1) {
@@ -259,24 +260,24 @@ public class Connection implements Runnable {
     
     public void debug() {
         List<Msg> recent = debugBuffer.getItems();
-        StringBuilder b = new StringBuilder();
-        b.append(idPrefix);
-        b.append(address);
+        StringBuilder strbuild = new StringBuilder();
+        strbuild.append(idPrefix);
+        strbuild.append(address);
         if (secured) {
-            b.append(" (secured)");
+            strbuild.append(" (secured)");
         }
-        b.append(" / Check count: ");
-        b.append(connectionCheckedCount).append("/").append(PING_AFTER_CHECKS);
-        b.append("\n");
+        strbuild.append(" / Check count: ");
+        strbuild.append(connectionCheckedCount).append("/").append(PING_AFTER_CHECKS);
+        strbuild.append("\n");
         for (Msg msg : recent) {
-            b.append(DateTime.formatExact(msg.time));
-            b.append(" ");
+            strbuild.append(DateTime.formatExact(msg.time));
+            strbuild.append(" ");
             if (msg.sent) {
-                b.append("<<< ");
+                strbuild.append("<<< ");
             }
-            b.append(filterToken(msg.raw)).append("\n");
+            strbuild.append(filterToken(msg.raw)).append("\n");
         }
-        LOGGER.info(b.toString());
+        LOGGER.info(strbuild.toString());
     }
     
     private static String filterToken(String msg) {

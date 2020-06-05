@@ -43,16 +43,16 @@ public class Logging {
         LogManager.getLogManager().reset();
 
         // Add console handler with custom formatter
-        ConsoleHandler c = new ConsoleHandler();
-        c.setFormatter(new TextFormatter());
-        c.setFilter(new Filter() {
+        ConsoleHandler consoleHandler = new ConsoleHandler();
+        consoleHandler.setFormatter(new TextFormatter());
+        consoleHandler.setFilter(new Filter() {
 
             @Override
             public boolean isLoggable(LogRecord record) {
                 return record.getLevel() != USERINFO;
             }
         });
-        Logger.getLogger("").addHandler(c);
+        Logger.getLogger("").addHandler(consoleHandler);
         
         // Add file handler with custom formatter
         try {
@@ -140,16 +140,16 @@ public class Logging {
                 getStacktraceForLogging(record.getThrown()));
     }
     
-    public static String getStacktrace(Throwable t) {
-        StringWriter sw = new StringWriter();
-        t.printStackTrace(new PrintWriter(sw));
-        return sw.toString();
+    public static String getStacktrace(Throwable throwable) {
+        StringWriter stringWriter = new StringWriter();
+        throwable.printStackTrace(new PrintWriter(stringWriter));
+        return stringWriter.toString();
     }
     
-    public static String getStacktraceForLogging(Throwable t) {
-        if (t != null) {
+    public static String getStacktraceForLogging(Throwable throwable) {
+        if (throwable != null) {
             try {
-                return "\n:"+getStacktrace(t);
+                return "\n:"+getStacktrace(throwable);
             } catch (Exception ex) {
                 return "\n:Error getting stacktrace";
             }

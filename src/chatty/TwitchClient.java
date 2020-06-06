@@ -89,6 +89,9 @@ import javax.swing.SwingUtilities;
  */
 public class TwitchClient {
 
+	public enum followOption{
+		FOLLOW, UNFOLLOW;
+	}
 	private static final Logger LOGGER = Logger.getLogger(TwitchClient.class.getName());
 
 	private volatile boolean shuttingDown = false;
@@ -153,6 +156,7 @@ public class TwitchClient {
 
 	public final RoomManager roomManager;
 
+	
 	/**
 	 * Holds the UserManager instance, which manages all the user objects.
 	 */
@@ -1204,10 +1208,10 @@ public class TwitchClient {
 			//------
 
 		case "follow":
-			commandFollow(channel, parameter);
+			commandFollow(channel, parameter, followOption.FOLLOW);
 			break;
 		case "unfollow":
-			commandUnfollow(channel, parameter);
+			commandFollow(channel, parameter, followOption.UNFOLLOW);
 			break;
 		case "favorite":
 			Favorite favoriteresult;
@@ -1918,7 +1922,7 @@ public class TwitchClient {
 	 * @param channel
 	 * @param parameter 
 	 */
-	public void commandFollow(String channel, String parameter) {
+	public void commandFollow(String channel, String parameter, followOption fo) {
 		String user = settings.getString("username");
 		String target = Helper.toStream(channel);
 		if (parameter != null && !parameter.isEmpty()) {
@@ -1932,25 +1936,35 @@ public class TwitchClient {
 			maingui.printSystem("No valid username.");
 			return;
 		}
-		twitchapi.followChannel(user, target);
+		
+		switch(fo)
+		{
+		case FOLLOW:
+			twitchapi.followChannel(user, target);
+			break;
+		case UNFOLLOW:
+			twitchapi.unfollowChannel(user, target);
+			break;
+		}
+		
 	}
 
-	public void commandUnfollow(String channel, String parameter) {
-		String user = settings.getString("username");
-		String target = Helper.toStream(channel);
-		if (parameter != null && !parameter.isEmpty()) {
-			target = Helper.toStream(parameter.trim());
-		}
-		if (!Helper.isValidStream(target)) {
-			maingui.printSystem("No valid channel to unfollow.");
-			return;
-		}
-		if (!Helper.isValidStream(user)) {
-			maingui.printSystem("No valid username.");
-			return;
-		}
-		twitchapi.unfollowChannel(user, target);
-	}
+//	public void commandUnfollow(String channel, String parameter, followOption fo) {
+//		String user = settings.getString("username");
+//		String target = Helper.toStream(channel);
+//		if (parameter != null && !parameter.isEmpty()) {
+//			target = Helper.toStream(parameter.trim());
+//		}
+//		if (!Helper.isValidStream(target)) {
+//			maingui.printSystem("No valid channel to unfollow.");
+//			return;
+//		}
+//		if (!Helper.isValidStream(user)) {
+//			maingui.printSystem("No valid username.");
+//			return;
+//		}
+//		
+//	}
 
 	public void commandAddStreamHighlight(Room room, String parameter) {
 		maingui.printLine(room, streamHighlights.addHighlight(room.getOwnerChannel(), parameter, null));

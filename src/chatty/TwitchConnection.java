@@ -225,12 +225,16 @@ public class TwitchConnection {
      * @return The delay in seconds
      */
     private int getReconnectionDelay(int attempt) {
-        if (attempt < 1 || attempt > RECONNECTION_DELAY.length) {
+        if (attemptDelay(attempt)) {
             return getMaxReconnectionDelay();
         }
         return RECONNECTION_DELAY[attempt-1];
     }
-    
+
+    private boolean attemptDelay(int attempt) {
+        return attempt < 1 || attempt > RECONNECTION_DELAY.length;
+    }
+
     public int getState() {
         return irc.getState();
     }
@@ -292,13 +296,17 @@ public class TwitchConnection {
     public boolean onChannel(String channel, boolean showMessage) {
         boolean onChannel = irc.joinedChannels.contains(channel);
         if (showMessage && !onChannel) {
-            if (channel == null || channel.isEmpty()) {
+            if (isChannelEmpty(channel)) {
                 listener.onInfo("Not in a channel");
             } else {
                 listener.onInfo("Not in this channel (" + channel + ")");
             }
         }
         return onChannel;
+    }
+
+    private boolean isChannelEmpty(String channel) {
+        return channel == null || channel.isEmpty();
     }
 
     public boolean onOwnerChannel(String ownerChannel) {
@@ -362,14 +370,18 @@ public class TwitchConnection {
      * connect it not already connected/connecting.
      */
     private void connect() {
-        if (irc.getState() <= Irc.STATE_OFFLINE) {
+        if (isStateOffline()) {
             cancelReconnectionTimer();
             irc.connect(server,serverPorts,username,password, getSecuredPorts());
         } else {
             listener.onConnectError("Already connected or connecting.");
         }
     }
-    
+
+    private boolean isStateOffline() {
+        return irc.getState() <= Irc.STATE_OFFLINE;
+    }
+
     private Collection<Integer> getSecuredPorts() {
         List setting = settings.getList("securedPorts");
         Collection<Integer> result = new HashSet<>();

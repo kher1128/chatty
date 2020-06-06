@@ -190,6 +190,8 @@ public class TwitchClient {
 
 	private boolean fixServer = false;
 
+	public TwitchApi api;
+
 	public TwitchClient(Map<String, String> args) {
 		// Logging
 		new Logging(this);
@@ -1615,14 +1617,14 @@ public class TwitchClient {
 			maingui.printModerationAction(new ModeratorActionData("", "", "", "tduvatest", "approved_twitchbot_message", args, "tduvatest", "TEST"+Math.random()), false);
 			break;
 		case "loadsoferros":
-			for (int i=0;i<10000;i++) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						Helper.unhandledException();
-					}
-				});
-			}
+//			for (int i=0;i<10000;i++) {
+//				SwingUtilities.invokeLater(new Runnable() {
+//					@Override
+//					public void run() {
+//						Helper.unhandledException();
+//					}
+//				});
+//			}
 			break;
 		case "getuserid":
 			if (parameter == null) {
@@ -2374,9 +2376,9 @@ public class TwitchClient {
 			LOGGER.info("Received server info: "+channel+"/"+server);
 			if (fixServer && server != null) {
 				String s = Helper.getServer(server);
-				int p = Helper.getPort(server);
+//				int p = Helper.getPort(server);
 				twitchconnection.disconnect();
-				prepareConnectionAnyChannel(s, String.valueOf(p));
+//				prepareConnectionAnyChannel(s, String.valueOf(p));
 			}
 			else {
 				//g.printLine(channel, "An error occured requesting server info.");

@@ -113,4 +113,50 @@ public class Hotkey {
         return actionId+"["+keyStrokeToText(keyStroke)+"]"+type+delay+custom;
     }
     
+    public static class Builder {
+    	private int id;
+    	private String name;
+    	private String actionId;
+    	private KeyStroke hotkey;
+    	private Type type;
+    	private String custom;
+        private int delay;
+        
+        
+        public Builder() {}
+        
+        public void setID(int id)
+        {
+        	this.id = id;
+        	return;
+        }
+        public void setName(String name)
+        {
+        	this.name = name;
+        	return;
+        }
+        public void setActionId(String actionId) {
+        	this.actionId = actionId;
+        	return;
+        }
+        public void setKeystroke(KeyStroke hotkey) {
+        	this.hotkey = hotkey;
+        	return;
+        }
+        public void setType(Type type) {
+        	this.type = type;
+        	return;
+        }
+        public void setCustom(String custom) {
+        	this.custom = custom;
+        	return;
+        }
+        public void setDelay(int delay) {
+        	this.delay = delay;
+        	return;
+        }
+        
+        
+        
+    }
 }

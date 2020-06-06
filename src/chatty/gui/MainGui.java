@@ -22,6 +22,7 @@ import chatty.util.api.*;
 import java.util.List;
 import chatty.Chatty;
 import chatty.TwitchClient;
+import chatty.TwitchClient.followOption;
 import chatty.Helper;
 import chatty.User;
 import chatty.Irc;
@@ -2009,11 +2010,11 @@ public class MainGui extends JFrame implements Runnable {
                 }
             } else if (cmd.equals("follow")) {
                 for (String stream : streams) {
-                    client.commandFollow(null, stream);
+                    client.commandFollow(null, stream, followOption.FOLLOW);
                 }
             } else if (cmd.equals("unfollow")) {
                 for (String stream : streams) {
-                    client.commandUnfollow(null, stream);
+                    client.commandFollow(null, stream,followOption.UNFOLLOW);
                 }
             } else if (cmd.equals("copy") && !streams.isEmpty()) {
                 MiscUtil.copyToClipboard(StringUtil.join(streams, ", "));

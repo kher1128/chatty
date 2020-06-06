@@ -17,7 +17,7 @@ import java.util.TimerTask;
 import java.util.logging.Logger;
 
 /**
- * Twitch Chat commands. All the Twitch specific commands like /mod, /timeout..
+ * Twitch Chat commands. All the Twitch specific commands like /mod, /timeout...
  * 
  * @author tduva
  */

@@ -40,7 +40,7 @@ public class TwitchConnection {
     private final Settings settings;
 
     /**
-     * Channels that should be joined after connecting.
+     * Channels that should be joined after connecting..
      */
     private volatile String[] autojoin;
     

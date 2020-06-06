@@ -17,7 +17,7 @@ import java.util.TimerTask;
 import java.util.logging.Logger;
 
 /**
- * Twitch Chat commands. All the Twitch specific commands like /mod, /timeout..
+ * Twitch Chat commands. All the Twitch specific commands like /mod, /timeout...
  * 
  * @author tduva
  */
@@ -65,10 +65,10 @@ public class TwitchCommands {
         "emoteonlyoff", "r9kbeta", "r9kbetaoff"
     }));
     
-    private TwitchConnection c;
+    private TwitchConnection twitchconnection;
     
-    public TwitchCommands(TwitchConnection c) {
-        this.c = c;
+    public TwitchCommands(TwitchConnection twitchconnection) {
+        this.twitchconnection = twitchconnection;
     }
     
     public boolean command(String channel, String msgId, String command, String parameter) {
@@ -82,7 +82,7 @@ public class TwitchCommands {
             command = "r9kbetaoff";
         }
         if (command.equals("host") && parameter == null) {
-            commandHostmode2(Helper.toChannel(c.getUsername()), Helper.toStream(channel));
+            commandHostmode2(Helper.toChannel(twitchconnection.getUsername()), Helper.toStream(channel));
         }
         else if (SIMPLE_COMMANDS.contains(command)) {
             // Simple commands that don't require any special handling for
@@ -92,8 +92,7 @@ public class TwitchCommands {
                 // Get custom message for this command, if available
                 String message = Language.getStringNull("chat.twitchcommands."+command,
                         !StringUtil.isNullOrEmpty(parameter) ? parameter : "default");
-                if (parameter == null || parameter.trim().isEmpty()
-                        || NO_PARAMETER_COMMANDS.contains(command)) {
+                if (hasParameterCommand(command, parameter)) {
                     // No parameter
                     String output = message != null ? message : "Trying to "+command+"..";
                     sendMessage(channel, "/"+command, output);
@@ -114,7 +113,7 @@ public class TwitchCommands {
             modsSilent(channel);
         }
         else if (command.equals("host2")) {
-            commandHostmode2(Helper.toChannel(c.getUsername()), parameter);
+            commandHostmode2(Helper.toChannel(twitchconnection.getUsername()), parameter);
         }
         else if (command.equals("raid")) {
             commandRaid(channel, parameter);
@@ -135,13 +134,21 @@ public class TwitchCommands {
         }
        return true;
     }
-    
+
+    private boolean hasParameterCommand(String command, String parameter) {
+        boolean isAnyParameter = parameter == null;
+        boolean isParameterEmpty = parameter.trim().isEmpty();
+        boolean isParameterCommands = NO_PARAMETER_COMMANDS.contains(command);
+        return isAnyParameter || isParameterEmpty
+                || isParameterCommands;
+    }
+
     //==================
     // Helper Functions
     //==================
     
     private boolean onChannel(String channel, boolean message) {
-        return c.onChannel(channel, message);
+        return twitchconnection.onChannel(channel, message);
     }
     
     private void sendMessage(String channel, String message, String echo) {
@@ -149,15 +156,15 @@ public class TwitchCommands {
     }
     
     private void sendMessage(String channel, String message, String echo, MsgTags tags) {
-        c.sendCommandMessage(channel, message, echo, tags);
+        twitchconnection.sendCommandMessage(channel, message, echo, tags);
     }
     
     private void printLine(String channel, String message) {
-        c.info(channel, message, null);
+        twitchconnection.info(channel, message, null);
     }
     
     private void printLine(String message) {
-        c.info(message);
+        twitchconnection.info(message);
     }
     
     private MsgTags createTags(String msgId) {
@@ -187,14 +194,18 @@ public class TwitchCommands {
     
     public void ban(String channel, String name, String reason) {
         if (onChannel(channel, true)) {
-            if (reason == null || reason.isEmpty()) {
+            if (hasReason((String) reason)) {
                 sendMessage(channel,".ban "+name, "Trying to ban "+name+"..");
             } else {
                 sendMessage(channel,".ban "+name+" "+reason, "Trying to ban "+name+".. ("+reason+")");
             }
         }
     }
-    
+
+    private boolean hasReason(String reason) {
+        return reason == null || reason.isEmpty();
+    }
+
     protected void commandTimeout(String channel, String msgId, String parameter) {
         if (parameter == null) {
             sendMessage(channel, "/timeout", "Trying to timeout..");
@@ -241,7 +252,7 @@ public class TwitchCommands {
                 sendMessage(channel,".timeout "+name, "Trying to timeout "+name+"..", tags);
             }
             else {
-                if (reason == null || reason.isEmpty()) {
+                if (hasReason(reason)) {
                     sendMessage(channel,".timeout "+name+" "+time,
                         "Trying to timeout "+name+" ("+timeLabel+")", tags);
                 } else {
@@ -278,8 +289,8 @@ public class TwitchCommands {
     }
     
     public void hostmode2(String channel, String target) {
-        if (c.isRegistered()) {
-            c.sendSpamProtectedMessage(channel, ".host "+target, false);
+        if (twitchconnection.isRegistered()) {
+            twitchconnection.sendSpamProtectedMessage(channel, ".host "+target, false);
             printLine(String.format("Trying to host %s from %s", target, channel));
         } else {
             printLine("Must be connected to chat to start hosting.");
@@ -301,7 +312,7 @@ public class TwitchCommands {
     public void requestModsSilent(String channel) {
         if (onChannel(channel, false)) {
             silentModsRequestChannel.add(channel);
-            c.sendSpamProtectedMessage(channel, ".mods", false);
+            twitchconnection.sendSpamProtectedMessage(channel, ".mods", false);
         }
     }
     
@@ -355,10 +366,10 @@ public class TwitchCommands {
      * channel (and only one), ignoring the ones it was already requested for.
      */
     private void autoRequestMods() {
-        if (!c.autoRequestModsEnabled()) {
+        if (!twitchconnection.autoRequestModsEnabled()) {
             return;
         }
-        Set<String> joinedChannels = c.getJoinedChannels();
+        Set<String> joinedChannels = twitchconnection.getJoinedChannels();
         for (String channel : joinedChannels) {
             if (!modsAlreadyRequested.contains(channel)) {
                 LOGGER.info("Auto-requesting mods for "+channel);

@@ -40,7 +40,7 @@ public class TwitchConnection {
     private final Settings settings;
 
     /**
-     * Channels that should be joined after connecting.
+     * Channels that should be joined after connecting..
      */
     private volatile String[] autojoin;
     
@@ -225,12 +225,18 @@ public class TwitchConnection {
      * @return The delay in seconds
      */
     private int getReconnectionDelay(int attempt) {
-        if (attempt < 1 || attempt > RECONNECTION_DELAY.length) {
+        if (attemptDelay(attempt)) {
             return getMaxReconnectionDelay();
         }
         return RECONNECTION_DELAY[attempt-1];
     }
-    
+
+    private boolean attemptDelay(int attempt) {
+        boolean isAtteptMinus = attempt < 1;
+        boolean isBigAttempt = attempt > RECONNECTION_DELAY.length;
+        return isAtteptMinus || isBigAttempt;
+    }
+
     public int getState() {
         return irc.getState();
     }
@@ -292,13 +298,17 @@ public class TwitchConnection {
     public boolean onChannel(String channel, boolean showMessage) {
         boolean onChannel = irc.joinedChannels.contains(channel);
         if (showMessage && !onChannel) {
-            if (channel == null || channel.isEmpty()) {
+            if (isChannelEmpty(channel)) {
                 listener.onInfo("Not in a channel");
             } else {
                 listener.onInfo("Not in this channel (" + channel + ")");
             }
         }
         return onChannel;
+    }
+
+    private boolean isChannelEmpty(String channel) {
+        return channel == null || channel.isEmpty();
     }
 
     public boolean onOwnerChannel(String ownerChannel) {
@@ -362,14 +372,18 @@ public class TwitchConnection {
      * connect it not already connected/connecting.
      */
     private void connect() {
-        if (irc.getState() <= Irc.STATE_OFFLINE) {
+        if (isStateOffline()) {
             cancelReconnectionTimer();
             irc.connect(server,serverPorts,username,password, getSecuredPorts());
         } else {
             listener.onConnectError("Already connected or connecting.");
         }
     }
-    
+
+    private boolean isStateOffline() {
+        return irc.getState() <= Irc.STATE_OFFLINE;
+    }
+
     private Collection<Integer> getSecuredPorts() {
         List setting = settings.getList("securedPorts");
         Collection<Integer> result = new HashSet<>();
@@ -485,7 +499,8 @@ public class TwitchConnection {
      */
     public boolean sendSpamProtectedMessage(String channel, String message,
             boolean action, MsgTags tags) {
-        if (!spamProtection.check()) {
+        boolean checkingSpamProtection = !spamProtection.check();
+        if (checkingSpamProtection) {
             return false;
         } else {
             if (Helper.isChatroomChannel(channel)) {
@@ -641,8 +656,10 @@ public class TwitchConnection {
                  * userlist, which may mean that the actual userlist is send
                  * using JOINs later.
                  */
-                if (nicknames.length == 1
-                        && nicknames[0].equalsIgnoreCase(username)) {
+                boolean isNameLengthOne = nicknames.length == 1;
+                boolean equalsIgnoreCase = nicknames[0].equalsIgnoreCase(username);
+                if (isNameLengthOne
+                        && equalsIgnoreCase) {
                     localUserJoined(channel);
                     return;
                 }
@@ -907,7 +924,8 @@ public class TwitchConnection {
             
             // Update color
             String color = tags.get("color");
-            if (color != null && !color.isEmpty()) {
+            boolean isAnyColor = color != null;
+            if (isAnyColor && !color.isEmpty()) {
                 user.setColor(color);
             }
             
@@ -1032,10 +1050,14 @@ public class TwitchConnection {
                 String recipient = tags.get("msg-param-recipient-display-name");
                 String plan = tags.get("msg-param-sub-plan");
                 boolean outputDirectly = false;
-                if (message != null && !message.isEmpty()) {
+                boolean isAnyMessage = message != null;
+                boolean isMessageEmpty = !message.isEmpty();
+                if (isAnyMessage && isMessageEmpty) {
                     outputDirectly = true;
                 }
-                if (recipient == null || plan == null) {
+                boolean isAnyRecipient = recipient == null;
+                boolean isAnyPlan = plan == null;
+                if (isAnyRecipient || isAnyPlan) {
                     outputDirectly = true;
                 }
                 if (outputDirectly) {
@@ -1043,7 +1065,8 @@ public class TwitchConnection {
                     listener.onSubscriberNotification(user, text, message, months, tags);
                     return;
                 }
-                if (gifter != user || !subPlan.equals(plan)) {
+                boolean isntGiferSameWithUser = gifter != user;
+                if (isntGiferSameWithUser || !subPlan.equals(plan)) {
                     flush();
                 }
                 if (recipients.size() == MAX_RECIPIENTS_PER_MESSAGE) {
@@ -1203,8 +1226,10 @@ public class TwitchConnection {
              * a) has to be checked first, because b) might remove the channel,
              * so a) might be true even if it shouldn't be
              */
-            if (!twitchCommands.waitingForModsSilent()
-                    || (channel != null && !twitchCommands.removeModsSilent(channel))) {
+            boolean notSilentMods = !twitchCommands.waitingForModsSilent();
+            boolean isSilentChannel = channel != null && !twitchCommands.removeModsSilent(channel);
+            if (notSilentMods
+                    || isSilentChannel) {
                 info(channel, "[Info] " + text, null);
 
                 // Output appropriate message

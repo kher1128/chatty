@@ -156,6 +156,7 @@ public class TwitchClient {
 
 	public final RoomManager roomManager;
 
+	
 	/**
 	 * Holds the UserManager instance, which manages all the user objects.
 	 */
@@ -1207,7 +1208,6 @@ public class TwitchClient {
 			//------
 
 		case "follow":
-			followOption fo = followOption.FOLLOW;
 			commandFollow(channel, parameter, followOption.FOLLOW);
 			break;
 		case "unfollow":

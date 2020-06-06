@@ -136,8 +136,11 @@ public class TwitchCommands {
     }
 
     private boolean hasParameterCommand(String command, String parameter) {
-        return parameter == null || parameter.trim().isEmpty()
-                || NO_PARAMETER_COMMANDS.contains(command);
+        boolean isAnyParameter = parameter == null;
+        boolean isParameterEmpty = parameter.trim().isEmpty();
+        boolean isParameterCommands = NO_PARAMETER_COMMANDS.contains(command);
+        return isAnyParameter || isParameterEmpty
+                || isParameterCommands;
     }
 
     //==================

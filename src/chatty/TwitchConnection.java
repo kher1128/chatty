@@ -1226,8 +1226,10 @@ public class TwitchConnection {
              * a) has to be checked first, because b) might remove the channel,
              * so a) might be true even if it shouldn't be
              */
-            if (!twitchCommands.waitingForModsSilent()
-                    || (channel != null && !twitchCommands.removeModsSilent(channel))) {
+            boolean notSilentMods = !twitchCommands.waitingForModsSilent();
+            boolean isSilentChannel = channel != null && !twitchCommands.removeModsSilent(channel);
+            if (notSilentMods
+                    || isSilentChannel) {
                 info(channel, "[Info] " + text, null);
 
                 // Output appropriate message

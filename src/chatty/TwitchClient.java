@@ -190,8 +190,6 @@ public class TwitchClient {
 
 	private boolean fixServer = false;
 
-	public TwitchApi api;
-
 	public TwitchClient(Map<String, String> args) {
 		// Logging
 		new Logging(this);

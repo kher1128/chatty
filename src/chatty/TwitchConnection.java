@@ -232,7 +232,9 @@ public class TwitchConnection {
     }
 
     private boolean attemptDelay(int attempt) {
-        return attempt < 1 || attempt > RECONNECTION_DELAY.length;
+        boolean isAtteptMinus = attempt < 1;
+        boolean isBigAttempt = attempt > RECONNECTION_DELAY.length;
+        return isAtteptMinus || isBigAttempt;
     }
 
     public int getState() {
@@ -497,7 +499,8 @@ public class TwitchConnection {
      */
     public boolean sendSpamProtectedMessage(String channel, String message,
             boolean action, MsgTags tags) {
-        if (!spamProtection.check()) {
+        boolean checkingSpamProtection = !spamProtection.check();
+        if (checkingSpamProtection) {
             return false;
         } else {
             if (Helper.isChatroomChannel(channel)) {
@@ -653,8 +656,10 @@ public class TwitchConnection {
                  * userlist, which may mean that the actual userlist is send
                  * using JOINs later.
                  */
-                if (nicknames.length == 1
-                        && nicknames[0].equalsIgnoreCase(username)) {
+                boolean isNameLengthOne = nicknames.length == 1;
+                boolean equalsIgnoreCase = nicknames[0].equalsIgnoreCase(username);
+                if (isNameLengthOne
+                        && equalsIgnoreCase) {
                     localUserJoined(channel);
                     return;
                 }
@@ -919,7 +924,8 @@ public class TwitchConnection {
             
             // Update color
             String color = tags.get("color");
-            if (color != null && !color.isEmpty()) {
+            boolean isAnyColor = color != null;
+            if (isAnyColor && !color.isEmpty()) {
                 user.setColor(color);
             }
             
@@ -1044,10 +1050,14 @@ public class TwitchConnection {
                 String recipient = tags.get("msg-param-recipient-display-name");
                 String plan = tags.get("msg-param-sub-plan");
                 boolean outputDirectly = false;
-                if (message != null && !message.isEmpty()) {
+                boolean isAnyMessage = message != null;
+                boolean isMessageEmpty = !message.isEmpty();
+                if (isAnyMessage && isMessageEmpty) {
                     outputDirectly = true;
                 }
-                if (recipient == null || plan == null) {
+                boolean isAnyRecipient = recipient == null;
+                boolean isAnyPlan = plan == null;
+                if (isAnyRecipient || isAnyPlan) {
                     outputDirectly = true;
                 }
                 if (outputDirectly) {
@@ -1055,7 +1065,8 @@ public class TwitchConnection {
                     listener.onSubscriberNotification(user, text, message, months, tags);
                     return;
                 }
-                if (gifter != user || !subPlan.equals(plan)) {
+                boolean isntGiferSameWithUser = gifter != user;
+                if (isntGiferSameWithUser || !subPlan.equals(plan)) {
                     flush();
                 }
                 if (recipients.size() == MAX_RECIPIENTS_PER_MESSAGE) {

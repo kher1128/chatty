@@ -246,7 +246,7 @@ public class MainGui extends JFrame implements Runnable {
         setHelpWindowIcons();
         channelInfoDialog = new ChannelInfoDialog(this);
         channelInfoDialog.addContextMenuListener(contextMenuListener);
-        adminDialog = new AdminDialog(this, client.tchi);
+        adminDialog = new AdminDialog(this, client.twitchapi);
         favoritesDialog = new FavoritesDialog(this, client.channelFavorites, contextMenuListener);
         GuiUtil.installEscapeCloseOperation(favoritesDialog);
         joinDialog = new JoinDialog(this);
@@ -258,9 +258,9 @@ public class MainGui extends JFrame implements Runnable {
         emotesDialog = new EmotesDialog(this, emoticons, this, contextMenuListener);
         GuiUtil.installEscapeCloseOperation(emotesDialog);
         followerDialog = new FollowersDialog(FollowersDialog.Type.FOLLOWERS,
-                this, client.tchi, contextMenuListener);
+                this, client.twitchapi, contextMenuListener);
         subscribersDialog = new FollowersDialog(FollowersDialog.Type.SUBSCRIBERS,
-                this, client.tchi, contextMenuListener);
+                this, client.twitchapi, contextMenuListener);
         
         // Tray/Notifications
         trayIcon = new TrayIconManager();
@@ -302,7 +302,7 @@ public class MainGui extends JFrame implements Runnable {
         StreamChatContextMenu.client = client;
         
         moderationLog = new ModerationLog(this);
-        autoModDialog = new AutoModDialog(this, client.tchi, client);
+        autoModDialog = new AutoModDialog(this, client.twitchapi, client);
         eventLog = new EventLog(this);
         EventLog.setMain(eventLog);
         
@@ -319,7 +319,7 @@ public class MainGui extends JFrame implements Runnable {
         pack();
         
         // Load some stuff
-        client.tchi.setUserId(client.settings.getString("username"), client.settings.getString("userid"));
+        client.twitchapi.setUserId(client.settings.getString("username"), client.settings.getString("userid"));
         //client.api.requestCheerEmoticons(false);
         // TEST
 //        client.api.getUserIdAsap(null, "m_tt");
@@ -979,15 +979,15 @@ public class MainGui extends JFrame implements Runnable {
         
         emoticons.setIgnoredEmotes(client.settings.getList("ignoredEmotes"));
         emoticons.loadFavoritesFromSettings(client.settings);
-        client.tchi.getEmotesBySets(emoticons.getFavoritesNonGlobalEmotesets());
+        client.twitchapi.getEmotesBySets(emoticons.getFavoritesNonGlobalEmotesets());
         emoticons.loadCustomEmotes();
         emoticons.addEmoji(client.settings.getString("emoji"));
         emoticons.setCheerState(client.settings.getString("cheersType"));
         emoticons.setCheerBackground(HtmlColors.decode(client.settings.getString("backgroundColor")));
         
-        client.tchi.setToken(client.settings.getString("token"));
+        client.twitchapi.setToken(client.settings.getString("token"));
         if (client.settings.getList("scopes").isEmpty()) {
-            client.tchi.checkToken();
+            client.twitchapi.checkToken();
         }
         
         userInfoDialog.setTimestampFormat(styleManager.makeTimestampFormat("userDialogTimestamp", null));
@@ -1360,7 +1360,7 @@ public class MainGui extends JFrame implements Runnable {
                             Language.getString("dialog.button.cancel")},
                         Language.getString("login.removeLogin.button.revoke"));
                 if (result == 0) {
-                    client.tchi.revokeToken(client.settings.getString("token"));
+                    client.twitchapi.revokeToken(client.settings.getString("token"));
                 }
                 if (result == 0 || result == 1) {
                     client.settings.setString("token", "");
@@ -1827,7 +1827,7 @@ public class MainGui extends JFrame implements Runnable {
                 channelStuff(e, streams);
             }
             if (cmd.equals("manualRefreshStreams")) {
-                client.tchi.manualRefreshStreams();
+                client.twitchapi.manualRefreshStreams();
                 state.update(true);
             }
             if (cmd.equals("sortOption_favFirst")) {
@@ -2000,7 +2000,7 @@ public class MainGui extends JFrame implements Runnable {
                     // Should add the stream to be requested
                     openEmotesDialogChannelEmotes(StringUtil.toLowerCase(firstStream));
                     // Request immediately in this case
-                    client.tchi.requestEmotesNow();
+                    client.twitchapi.requestEmotesNow();
                 }
             } else if (cmd.equals("hostchannel")) {
                 if (firstStream != null && streams.size() == 1) {
@@ -4051,7 +4051,7 @@ public class MainGui extends JFrame implements Runnable {
      * @param token 
      */
     private void verifyToken(String token) {
-        client.tchi.verifyToken(token);
+        client.twitchapi.verifyToken(token);
         tokenDialog.verifyingToken();
     }
     
@@ -4259,19 +4259,19 @@ public class MainGui extends JFrame implements Runnable {
     }
     
     public void putChannelInfo(ChannelInfo info) {
-        client.tchi.putChannelInfo(info);
+        client.twitchapi.putChannelInfo(info);
     }
     
     public void getChannelInfo(String channel) {
-        client.tchi.getChannelInfo(channel);
+        client.twitchapi.getChannelInfo(channel);
     }
     
     public ChannelInfo getCachedChannelInfo(String channel, String id) {
-        return client.tchi.getCachedChannelInfo(channel, id);
+        return client.twitchapi.getCachedChannelInfo(channel, id);
     }
     
     public Follower getSingleFollower(String stream, String streamId, String user, String userId, boolean refresh) {
-        return client.tchi.getSingeFollower(stream, streamId, user, userId, refresh);
+        return client.twitchapi.getSingeFollower(stream, streamId, user, userId, refresh);
     }
 
     public String getActiveStream() {
@@ -4377,7 +4377,7 @@ public class MainGui extends JFrame implements Runnable {
                 streams.add(chan.getStreamName());
             }
         }
-        return client.tchi.getStreamInfo(stream, streams);
+        return client.twitchapi.getStreamInfo(stream, streams);
     }
     
     /**
@@ -4407,7 +4407,7 @@ public class MainGui extends JFrame implements Runnable {
     private void requestFollowedStreams() {
         if (client.settings.getBoolean("requestFollowedStreams") &&
                 client.settings.getList("scopes").contains(TokenInfo.Scope.USERINFO.scope)) {
-            client.tchi.getFollowedStreams(client.settings.getString("token"));
+            client.twitchapi.getFollowedStreams(client.settings.getString("token"));
         }
     }
     
@@ -4492,7 +4492,7 @@ public class MainGui extends JFrame implements Runnable {
                 if (setting.equals("timeoutButtons") || setting.equals("banReasonsHotkey")) {
                     userInfoDialog.setUserDefinedButtonsDef(client.settings.getString("timeoutButtons"));
                 } else if (setting.equals("token")) {
-                    client.tchi.setToken((String)value);
+                    client.twitchapi.setToken((String)value);
                 } else if (setting.equals("emoji")) {
                     emoticons.addEmoji((String)value);
                 } else if (setting.equals("cheersType")) {

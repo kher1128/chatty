@@ -89,6 +89,9 @@ import javax.swing.SwingUtilities;
  */
 public class TwitchClient {
 
+	public enum followoption {
+		FOLLOW, UNFOLLOW
+	}
 	private static final Logger LOGGER = Logger.getLogger(TwitchClient.class.getName());
 
 	private volatile boolean shuttingDown = false;
@@ -390,7 +393,7 @@ public class TwitchClient {
 		Splash.closeSplashScreen();
 
 		// Output any cached warning messages
-		warning(null);
+		warning(null)
 
 		// Request some stuff
 		twitchapi.getEmotesBySets("0");

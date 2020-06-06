@@ -42,7 +42,7 @@ import javax.swing.table.TableRowSorter;
  *
  * @author tduva
  */
-public class FavoritesDialog extends JDialog {
+public class FavoritesDialog extends JDialog implements GBCMaking{
     
     private final JTable table;
     private final MyTableModel data;
@@ -458,16 +458,6 @@ public class FavoritesDialog extends JDialog {
         return sorter.getSorting();
     }
     
-    private GridBagConstraints makeGbc(int x, int y, int w, int h) {
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = x;
-        gbc.gridy = y;
-        gbc.gridwidth = w;
-        gbc.gridheight = h;
-        gbc.insets = new Insets(5,5,5,5);
-        return gbc;
-    }
-    
     /**
      * Renderer to draw the star icon for favorited entries.
      */
@@ -708,6 +698,18 @@ public class FavoritesDialog extends JDialog {
         }
         
     }
+
+	@Override
+	public GridBagConstraints makeGbc(int x, int y, int w, int h) {
+		// TODO Auto-generated method stub
+		GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = x;
+        gbc.gridy = y;
+        gbc.gridwidth = w;
+        gbc.gridheight = h;
+        gbc.insets = new Insets(5,5,5,5);
+        return gbc;
+	}
     
 }
 

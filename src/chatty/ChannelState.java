@@ -38,10 +38,12 @@ public class ChannelState {
     
     private String lang;
     
-    // Should be -1, since 0 means on as well
+    
+	// Should be -1, since 0 means on as well
     private int followersOnly = -1;
     
-    /**
+    
+	/**
      * Cached info text based on the current state.
      */
     private String info = "";
@@ -53,6 +55,14 @@ public class ChannelState {
     public String getChannel() {
         return channel;
     }
+    
+    public String getLang() {
+		return lang;
+	}
+    
+    public int getFollowersOnly() {
+		return followersOnly;
+	}
     
     /**
      * Set all state back to their default value (off/disabled).
@@ -207,71 +217,9 @@ public class ChannelState {
     /**
      * Update the info text once a state has been updated.
      */
+
     private void updateInfo() {
-        String result = "";
-        String sep = "|";
-        result = updateSlowMode(result);
-        result = updateSubMode(result, sep);
-        result = updateFollowersOnly(result, sep);
-        result = updateR9kMode(result, sep);
-        result = updateEmoteOnly(result, sep);
-        result = updateHosting(result, sep);
-        result = updateLang(result, sep);
-        if (!result.isEmpty()) {
-            result = "["+result+"]";
-        }
-        info = result;
+    	Update update= new UpdateChannelState();
+    	info=update.getInfo(this);
     }
-    
-	private String updateSlowMode(String result) {
-		if (slowMode == SLOWMODE_ON_INVALID || slowMode > 86400) {
-            result += "Slow: >day";
-        } else if (slowMode > 999) {
-            result += "Slow: "+DateTime.duration(slowMode*1000, 1, 0);
-        } else if (slowMode > 0) {
-            result += "Slow: "+slowMode;
-        }
-		return result;
-	}
-	
-	private String updateSubMode(String result, String sep) {
-		if (subMode) {
-            result = StringUtil.append(result, sep, "Sub");
-        }
-		return result;
-	}
-	private String updateFollowersOnly(String result, String sep) {
-		if (followersOnly == SLOWMODE_ON_INVALID) {
-            result = StringUtil.append(result, sep, "Followers: ?");
-        } else if (followersOnly > 0) {
-            result = StringUtil.append(result, sep, "Followers: "+DateTime.duration((long)followersOnly*60*1000, 1, DateTime.S, DateTime.Formatting.COMPACT));
-        } else if (followersOnly == 0) {
-            result = StringUtil.append(result, sep, "Followers");
-        }
-		return result;
-	}
-	private String updateR9kMode(String result, String sep) {
-		if (r9kMode) {
-            result = StringUtil.append(result, sep, "r9k");
-        }
-		return result;
-	}
-	private String updateEmoteOnly(String result, String sep) {
-		if (emoteOnly) {
-            result = StringUtil.append(result, sep, "EmoteOnly");
-        }
-		return result;
-	}
-	private String updateHosting(String result, String sep) {
-		if (hosting != null && !hosting.isEmpty()) {
-            result = StringUtil.append(result, sep, "Hosting: "+hosting);
-        }
-		return result;
-	}
-	private String updateLang(String result, String sep) {
-		if (lang != null && !lang.isEmpty()) {
-            result = StringUtil.append(result, sep, lang);
-        }
-		return result;
-	}
 }

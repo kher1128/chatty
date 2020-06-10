@@ -183,6 +183,14 @@ public class Room {
         return "["+Language.getString("chat.topic")+"] "+topic;
     }
     
+    public String getCustomName() {
+    	return customName;
+    }
+    
+    public String getId() {
+    	return id;
+    }
+    
     public boolean sameChannel(Room other) {
         return channel.equals(other.channel);
     }

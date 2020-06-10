@@ -26,7 +26,7 @@ import javax.swing.event.DocumentListener;
  *
  * @author tduva
  */
-public class JoinDialog extends JDialog {
+public class JoinDialog extends JDialog implements GBCMaking{
     
     private final JTextField channels = new JTextField(20);
     
@@ -142,15 +142,17 @@ public class JoinDialog extends JDialog {
         joinButton.setEnabled(!empty);
         joinButton.setText(Language.getString("join.button.join", chans.size()));
     }
-    
-    private GridBagConstraints makeGbc(int x, int y, int w, int h) {
-        GridBagConstraints gbc = new GridBagConstraints();
+
+	@Override
+	public GridBagConstraints makeGbc(int x, int y, int w, int h) {
+		// TODO Auto-generated method stub
+		GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = x;
         gbc.gridy = y;
         gbc.gridwidth = w;
         gbc.gridheight = h;
         gbc.insets = new Insets(3,3,3,3);
         return gbc;
-    }
+	}
     
 }

@@ -18,7 +18,7 @@ public class Shutdown implements Runnable {
 
     private final TwitchClient client;
     
-    public Shutdown(TwitchClient client) {
+    protected Shutdown(TwitchClient client) {
         this.client = client;
     }
     

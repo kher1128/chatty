@@ -14,7 +14,7 @@ import javax.swing.*;
  *
  * @author tduva
  */
-public class ConnectionDialog extends JDialog {
+public class ConnectionDialog extends JDialog implements GBCMaking{
 
     private final static Insets SMALL_BUTTON_INSETS = new Insets(-1, 10, -1, 10);
     
@@ -28,8 +28,8 @@ public class ConnectionDialog extends JDialog {
     private final JButton getToken = new JButton();
     private final JCheckBox rejoinOpenChannels = new JCheckBox(Language.getString("connect.button.rejoin"));
     
-    private final GridBagConstraints passwordGc = makeGbc(1,1,2,1,GridBagConstraints.WEST);
-    private final GridBagConstraints passwordLabelGc = makeGbc(0,1,1,1,GridBagConstraints.WEST);
+    private final GridBagConstraints passwordGc = makeGbcWithAnchor(1,1,2,1,GridBagConstraints.WEST);
+    private final GridBagConstraints passwordLabelGc = makeGbcWithAnchor(0,1,1,1,GridBagConstraints.WEST);
     
     private String currentUsername = "";
     
@@ -54,8 +54,8 @@ public class ConnectionDialog extends JDialog {
         
         // Account
         final JLabel nameLabel = new JLabel(Language.getString("connect.account"));
-        add(nameLabel, makeGbc(0,0,1,1,GridBagConstraints.EAST));
-        add(name, makeGbc(1,0,2,1,GridBagConstraints.WEST));
+        add(nameLabel, makeGbcWithAnchor(0,0,1,1,GridBagConstraints.EAST));
+        add(name, makeGbcWithAnchor(1,0,2,1,GridBagConstraints.WEST));
         
         // Passwort or Token Button
         //add(passwordLabel, makeGbc(0,1,1,1,GridBagConstraints.EAST));
@@ -63,7 +63,7 @@ public class ConnectionDialog extends JDialog {
         
         // Configure Login Button
         getToken.setMnemonic(KeyEvent.VK_L);
-        gbc = makeGbc(1,2,2,1,GridBagConstraints.WEST);
+        gbc = makeGbcWithAnchor(1,2,2,1,GridBagConstraints.WEST);
         gbc.insets = new Insets(0,5,2,20);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1;
@@ -72,7 +72,7 @@ public class ConnectionDialog extends JDialog {
  
         // Rejoin Open Channels Checkbox
         rejoinOpenChannels.setMargin(SMALL_BUTTON_INSETS);
-        gbc = makeGbc(1, 3, 2, 1, GridBagConstraints.WEST);
+        gbc = makeGbcWithAnchor(1, 3, 2, 1, GridBagConstraints.WEST);
         gbc.insets = new Insets(5, -7, 0, 5);
         add(rejoinOpenChannels, gbc);
         
@@ -86,10 +86,10 @@ public class ConnectionDialog extends JDialog {
         
         // Channels and Favorites
         final JLabel channelLabel = new JLabel(Language.getString("connect.channel"));
-        add(channelLabel, makeGbc(0,4,1,1,GridBagConstraints.EAST));
+        add(channelLabel, makeGbcWithAnchor(0,4,1,1,GridBagConstraints.EAST));
 
         GuiUtil.installLengthLimitDocumentFilter(channel, 8000, false);
-        gbc = makeGbc(1,4,2,1,GridBagConstraints.WEST);
+        gbc = makeGbcWithAnchor(1,4,2,1,GridBagConstraints.WEST);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5,5,5,8);
         add(channel, gbc);
@@ -97,7 +97,7 @@ public class ConnectionDialog extends JDialog {
         
         // Favorites Button
         favorites.setMnemonic(KeyEvent.VK_F);
-        gbc = makeGbc(1,5,2,1, GridBagConstraints.WEST);
+        gbc = makeGbcWithAnchor(1,5,2,1, GridBagConstraints.WEST);
         gbc.insets = new Insets(0,5,10,8);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         favorites.setMargin(SMALL_BUTTON_INSETS);
@@ -106,11 +106,11 @@ public class ConnectionDialog extends JDialog {
         
         // Main Buttons
         connect.setMnemonic(KeyEvent.VK_E);
-        gbc = makeGbc(1,6,1,1,GridBagConstraints.EAST);
+        gbc = makeGbcWithAnchor(1,6,1,1,GridBagConstraints.EAST);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 0.6;
         add(connect, gbc);
-        gbc = makeGbc(2,6,1,1,GridBagConstraints.WEST);
+        gbc = makeGbcWithAnchor(2,6,1,1,GridBagConstraints.WEST);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         cancel.setMnemonic(KeyEvent.VK_C);
         add(cancel, gbc);
@@ -222,15 +222,24 @@ public class ConnectionDialog extends JDialog {
         channel.setEnabled(!rejoinOpenChannels.isEnabled() || !rejoinOpenChannels.isSelected());
     }
     
-    private GridBagConstraints makeGbc(int x, int y,int w, int h, int anchor) {
-        GridBagConstraints constraints = new GridBagConstraints();
+    private GridBagConstraints makeGbcWithAnchor(int x, int y,int w, int h, int anchor) {
+    	GridBagConstraints constraints = new GridBagConstraints();
+    	constraints = makeGbc(x, y, w, h);
+        constraints.anchor = anchor;
+        return constraints;
+    }
+
+	@Override
+	public GridBagConstraints makeGbc(int x, int y, int w, int h) {
+		// TODO Auto-generated method stub
+		GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = x;
         constraints.gridy = y;
         constraints.gridwidth = w;
         constraints.gridheight = h;
         constraints.insets = new Insets(5,5,5,5);
-        constraints.anchor = anchor;
         return constraints;
-    }
+	}
     
+	
 }

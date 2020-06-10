@@ -33,7 +33,7 @@ public class Helper {
     
     private static final Logger LOGGER = Logger.getLogger(Helper.class.getName());
     
-    public static final DecimalFormat VIEWERCOUNT_FORMAT = new DecimalFormat();
+    private static final DecimalFormat VIEWERCOUNT_FORMAT = new DecimalFormat();
     
     public static String formatViewerCount(int viewerCount) {
         return VIEWERCOUNT_FORMAT.format(viewerCount);
@@ -168,10 +168,8 @@ public class Helper {
      * @return The channelname with leading #, or null if channel was invalid.
      */
     public static String toValidChannel(String channel) {
-        if (channel == null) {
-            return null;
-        }
-        if (!isValidChannel(channel)) {
+    	boolean isNotValid = (channel == null) || !isValidChannel(channel);  
+        if (isNotValid) {
             return null;
         }
         if (!channel.startsWith("#")) {
@@ -240,7 +238,17 @@ public class Helper {
     public static String makeDisconnectReason(int reason, String reasonMessage) {
         String result = "";
         
-        switch (reason) {
+        result = kindOfDisconnect(reason, reasonMessage, result);
+        
+        if (!result.isEmpty()) {
+            result = " ("+result+")";
+        }
+        
+        return result;
+    }
+
+	private static String kindOfDisconnect(int reason, String reasonMessage, String result) {
+		switch (reason) {
             case Irc.ERROR_UNKNOWN_HOST:
                 result = Language.getString("chat.error.unknownHost");
                 break;
@@ -263,13 +271,8 @@ public class Helper {
                 result = reasonMessage;
                 break;
         }
-        
-        if (!result.isEmpty()) {
-            result = " ("+result+")";
-        }
-        
-        return result;
-    }
+		return result;
+	}
     
 
     /**
@@ -356,39 +359,39 @@ public class Helper {
         TAGS_VALUE_DECODE = new Replacer(replacements2);
     }
     
-    public static String tagsvalue_decode(String s) {
-        if (s == null) {
+    public static String tagsvalue_decode(String string) {
+        if (string == null) {
             return null;
         }
-        return TAGS_VALUE_DECODE.replace(s);
+        return TAGS_VALUE_DECODE.replace(string);
     }
     
-    public static String tagsvalue_encode(String s) {
-        if (s == null) {
+    public static String tagsvalue_encode(String string) {
+        if (string == null) {
             return null;
         }
-        return TAGS_VALUE_ENCODE.replace(s);
+        return TAGS_VALUE_ENCODE.replace(string);
     }
     
-    public static String htmlspecialchars_decode(String s) {
-        if (s == null) {
+    public static String htmlspecialchars_decode(String string) {
+        if (string == null) {
             return null;
         }
-        return HTMLSPECIALCHARS_DECODE.replace(s);
+        return HTMLSPECIALCHARS_DECODE.replace(string);
     }
     
-    public static String htmlspecialchars_encode(String s) {
-        if (s == null) {
+    public static String htmlspecialchars_encode(String string) {
+        if (string == null) {
             return null;
         }
-        return HTMLSPECIALCHARS_ENCODE.replace(s);
+        return HTMLSPECIALCHARS_ENCODE.replace(string);
     }
     
-    public static String prepareForHtml(String s) {
-        if (s == null) {
+    public static String prepareForHtml(String string) {
+        if (string == null) {
             return null;
         }
-        return htmlspecialchars_encode(s).replaceAll(" ", "&nbsp;").replaceAll("\n", "<br />");
+        return htmlspecialchars_encode(string).replaceAll(" ", "&nbsp;").replaceAll("\n", "<br />");
     }
     
     private static final Pattern EMOJI_VARIATION_SELECTOR = Pattern.compile("[\uFE0E\uFE0F]");
@@ -427,11 +430,6 @@ public class Helper {
         return subList;
     }
     
-    public static void unhandledException() {
-        String[] a = new String[0];
-        String b = a[1];
-    }
-    
     public static boolean arrayContainsInt(int[] array, int test) {
         for (int i = 0; i < array.length; i++) {
             if (array[i] == test) {
@@ -456,9 +454,9 @@ public class Helper {
             return null;
         }
         try {
-            int a = Integer.parseInt(split[0]);
-            int b = Integer.parseInt(split[1]);
-            return new IntegerPair(a, b);
+            int firstIDX = Integer.parseInt(split[0]);
+            int secondIDX = Integer.parseInt(split[1]);
+            return new IntegerPair(firstIDX, secondIDX);
         } catch (NumberFormatException ex) {
             return null;
         }
@@ -480,7 +478,7 @@ public class Helper {
     
     
     
-    public static final void main(String[] args) {
+    public static final void main(String[] args) throws Exception {
 //        System.out.println(htmlspecialchars_encode("< >"));
 //        System.out.println(shortenTo("abcd", 0));
 //        System.out.println(shortenTo("abcd", 1));
@@ -654,10 +652,10 @@ public class Helper {
      * @param serverAndPort 
      * @return The parsed port, or -1 if invalid
      */
-    public static int getPort(String serverAndPort) {
+    public static int getPort(String serverAndPort) throws Exception{
         int p = serverAndPort.lastIndexOf(":");
         if (p == -1) {
-            return -1;
+            throw NotExistServerException();
         }
         String port = serverAndPort.substring(p+1);
         try {
@@ -667,7 +665,12 @@ public class Helper {
         }
     }
     
-    private static String makeBanInfoDuration(long duration) {
+    private static Exception NotExistServerException() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private static String makeBanInfoDuration(long duration) {
         if (duration < 120) {
             return String.format("%ds", duration);
         }

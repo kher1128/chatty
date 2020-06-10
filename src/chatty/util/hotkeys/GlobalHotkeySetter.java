@@ -2,6 +2,7 @@
 package chatty.util.hotkeys;
 
 import chatty.*;
+
 import com.melloware.jintellitype.HotkeyListener;
 import com.melloware.jintellitype.JIntellitype;
 import com.melloware.jintellitype.JIntellitypeException;

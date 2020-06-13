@@ -87,8 +87,8 @@ public class Logging {
                     }
                 }
                 if (record.getLevel() == Level.SEVERE) {
-                    if (client.g != null) {
-                        client.g.error(record, lastMessages.getItems());
+                    if (client.maingui != null) {
+                        client.maingui.error(record, lastMessages.getItems());
                     }
                 } else if (record.getLevel() == USERINFO) {
                     client.warning(record.getMessage());

@@ -89,7 +89,7 @@ import javax.swing.SwingUtilities;
  */
 public class TwitchClient {
 
-	public enum followOption{
+	public static enum followOption{
 		FOLLOW, UNFOLLOW;
 	}
 	private static final Logger LOGGER = Logger.getLogger(TwitchClient.class.getName());
@@ -121,7 +121,7 @@ public class TwitchClient {
 	/**
 	 * Holds the TwitchApi object, which is used to make API requests
 	 */
-	public final TwitchApi twitchapi;
+	public final TwitchApi twtichapi;
 
 	public final chatty.util.api.pubsub.Manager pubsub;
 	private final PubSubResults pubsubListener = new PubSubResults();
@@ -236,16 +236,16 @@ public class TwitchClient {
 
 		createTestUser("tduva", "");
 
-		twitchapi = new TwitchApi(new TwitchApiResults(), new MyStreamInfoListener());
-		bttvEmotes = new BTTVEmotes(new EmoteListener(), twitchapi);
-		TwitchEmotesApi.api.setTwitchApi(twitchapi);
+		twtichapi = new TwitchApi(new TwitchApiResults(), new MyStreamInfoListener());
+		bttvEmotes = new BTTVEmotes(new EmoteListener(), twtichapi);
+		TwitchEmotesApi.api.setTwitchApi(twtichapi);
 
 		Language.setLanguage(settings.getString("language"));
 
 		pubsub = new chatty.util.api.pubsub.Manager(
-				settings.getString("pubsub"), pubsubListener, twitchapi);
+				settings.getString("pubsub"), pubsubListener, twtichapi);
 
-		frankerFaceZ = new FrankerFaceZ(new EmoticonsListener(), settings, twitchapi);
+		frankerFaceZ = new FrankerFaceZ(new EmoticonsListener(), settings, twtichapi);
 
 		ImageCache.setDefaultPath(Paths.get(Chatty.getCacheDirectory()+"img"));
 		ImageCache.setCachingEnabled(settings.getBoolean("imageCache"));
@@ -254,12 +254,12 @@ public class TwitchClient {
 
 		usercolorManager = new UsercolorManager(settings);
 		usericonManager = new UsericonManager(settings);
-		customCommands = new CustomCommands(settings, twitchapi, this);
+		customCommands = new CustomCommands(settings, twtichapi, this);
 		customCommands.loadFromSettings();
 		botNameManager = new BotNameManager(settings);
 		settings.addSettingsListener(new SettingSaveListener());
 
-		streamHighlights = new StreamHighlightHelper(settings, twitchapi);
+		streamHighlights = new StreamHighlightHelper(settings, twtichapi);
 
 		customNames = new CustomNames(settings);
 
@@ -271,7 +271,7 @@ public class TwitchClient {
 		testUser.setAddressbook(addressbook);
 
 		speedrunsLive = new SpeedrunsLive();
-		speedruncom = new Speedruncom(twitchapi);
+		speedruncom = new Speedruncom(twtichapi);
 
 		statusHistory = new StatusHistory(settings);
 		settings.addSettingsListener(statusHistory);
@@ -293,7 +293,7 @@ public class TwitchClient {
 
 		whispermanager = new WhisperManager(new MyWhisperListener(), settings, twitchconnection);
 
-		streamStatusWriter = new StreamStatusWriter(Chatty.getUserDataDirectory(), twitchapi);
+		streamStatusWriter = new StreamStatusWriter(Chatty.getUserDataDirectory(), twtichapi);
 		streamStatusWriter.setSetting(settings.getString("statusWriter"));
 		streamStatusWriter.setEnabled(settings.getBoolean("enableStatusWriter"));
 		settings.addSettingChangeListener(streamStatusWriter);
@@ -305,10 +305,10 @@ public class TwitchClient {
 		LOGGER.info("Create GUI..");
 		maingui = new MainGui(this);
 		maingui.loadSettings();
-		emotesetManager = new EmotesetManager(twitchapi, maingui, settings);
+		emotesetManager = new EmotesetManager(twtichapi, maingui, settings);
 		maingui.showGui();
 
-		autoModCommandHelper = new AutoModCommandHelper(maingui, twitchapi);
+		autoModCommandHelper = new AutoModCommandHelper(maingui, twtichapi);
 
 		if (Chatty.DEBUG) {
 			Room testRoom =  Room.createRegular("");
@@ -397,7 +397,7 @@ public class TwitchClient {
 		warning(null);
 
 		// Request some stuff
-		twitchapi.getEmotesBySets("0");
+		twtichapi.getEmotesBySets("0");
 
 		// Before checkNewVersion(), so "updateAvailable" is already updated
 		checkForVersionChange();
@@ -748,7 +748,7 @@ public class TwitchClient {
 		if (channel != null) {
 			settings.setString("channel", channel);
 		}
-		twitchapi.requestUserId(Helper.toStream(autojoin));
+		twtichapi.requestUserId(Helper.toStream(autojoin));
 		//        api.getEmotesByStreams(Helper.toStream(autojoin)); // Removed
 		twitchconnection.connect(server, ports, name, password, autojoin);
 		return true;
@@ -1429,15 +1429,15 @@ public class TwitchClient {
 			System.out.println(testStreamInfo.getViewerStats(true));
 			break;
 		case "tsaoff":
-			StreamInfo info = twitchapi.getStreamInfo(maingui.getActiveStream(), null);
+			StreamInfo info = twtichapi.getStreamInfo(maingui.getActiveStream(), null);
 			info.setOffline();
 			break;
 		case "tsaon":
-			info = twitchapi.getStreamInfo(maingui.getActiveStream(), null);
+			info = twtichapi.getStreamInfo(maingui.getActiveStream(), null);
 			info.set("Test", "Game", 12, System.currentTimeMillis() - 1000, StreamType.LIVE);
 			break;
 		case "tss":
-			info = twitchapi.getStreamInfo(parameter, null);
+			info = twtichapi.getStreamInfo(parameter, null);
 			info.set("Test", "Game", 12, System.currentTimeMillis() - 1000, StreamType.LIVE);
 			break;
 		case "tston":
@@ -1445,11 +1445,11 @@ public class TwitchClient {
 			try {
 				viewers = Integer.parseInt(parameter);
 			} catch (NumberFormatException ex) { }
-			info = twitchapi.getStreamInfo("tduva", null);
+			info = twtichapi.getStreamInfo("tduva", null);
 			info.set("Test 2", "Game", viewers, System.currentTimeMillis() - 1000, StreamType.LIVE);
 			break;
 		case "refreshstreams":
-			twitchapi.manualRefreshStreams();
+			twtichapi.manualRefreshStreams();
 			break;
 		case "usericonsinfo":
 			usericonManager.debug();
@@ -1480,7 +1480,7 @@ public class TwitchClient {
 			//                  + "fjwfjfwjefjwefjwef wfejfkwlefjwoefjwf wfjwoeifjwefiowejfef wefjoiwefj", false, null, 0);
 			break;
 		case "requestfollower":
-			twitchapi.getFollowers(parameter);
+			twtichapi.getFollowers(parameter);
 			break;
 		case "simulate2":
 			twitchconnection.simulate(parameter);
@@ -1628,7 +1628,7 @@ public class TwitchClient {
 			if (parameter == null) {
 				maingui.printSystem("Parameter required.");
 			} else {
-				twitchapi.getUserIdAsap(r -> {
+				twtichapi.getUserIdAsap(r -> {
 					String result = r.getData().toString();
 					if (r.hasError()) {
 						result += " Error: "+r.getError();
@@ -1638,10 +1638,10 @@ public class TwitchClient {
 			}
 			break;
 		case "getuserids2":
-			twitchapi.getUserIDsTest2(parameter);
+			twtichapi.getUserIDsTest2(parameter);
 			break;
 		case "getuserid3":
-			twitchapi.getUserIDsTest3(parameter);
+			twtichapi.getUserIDsTest3(parameter);
 			break;
 		case "clearoldsetups":
 			Stuff.init();
@@ -1653,7 +1653,7 @@ public class TwitchClient {
 			if (parameter != null) {
 				tags.add(new StreamTag(parameter, "name2", "summary", false));
 			}
-			twitchapi.getInvalidStreamTags(tags, (t,e) -> {
+			twtichapi.getInvalidStreamTags(tags, (t,e) -> {
 				System.out.println(t+" "+e);
 			});
 			break;
@@ -1940,10 +1940,10 @@ public class TwitchClient {
 		switch(fo)
 		{
 		case FOLLOW:
-			twitchapi.followChannel(user, target);
+			twtichapi.followChannel(user, target);
 			break;
 		case UNFOLLOW:
-			twitchapi.unfollowChannel(user, target);
+			twtichapi.unfollowChannel(user, target);
 			break;
 		}
 		
@@ -1988,7 +1988,7 @@ public class TwitchClient {
 	}
 
 	public void commandAddStreamMarker(Room room, String description) {
-		twitchapi.createStreamMarker(room.getStream(), description, error -> {
+		twtichapi.createStreamMarker(room.getStream(), description, error -> {
 			String info = StringUtil.aEmptyb(description, "no description", "'%s'");
 			if (error == null) {
 				maingui.printLine("Stream marker created ("+info+")");
@@ -2008,12 +2008,12 @@ public class TwitchClient {
 			maingui.printLine("Refreshing emoticons.. (this can take a few seconds)");
 			refreshRequests.add("emoticons");
 			//Emoticons.clearCache(Emoticon.Type.TWITCH);
-			twitchapi.refreshEmotes();
+			twtichapi.refreshEmotes();
 			break;
 		case "bits":
 			maingui.printLine("Refreshing bits..");
 			refreshRequests.add("bits");
-			twitchapi.getCheers(channel, true);
+			twtichapi.getCheers(channel, true);
 			break;
 		case "badges":
 			if (!Helper.isValidChannel(channel)) {
@@ -2021,8 +2021,8 @@ public class TwitchClient {
 			} else {
 				maingui.printLine("Refreshing badges for " + channel + "..");
 				refreshRequests.add("badges");
-				twitchapi.getGlobalBadges(true);
-				twitchapi.getRoomBadges(Helper.toStream(channel), true);
+				twtichapi.getGlobalBadges(true);
+				twtichapi.getRoomBadges(Helper.toStream(channel), true);
 				OtherBadges.requestBadges(r -> usericonManager.setThirdPartyIcons(r), true);
 			}
 			break;
@@ -2298,7 +2298,7 @@ public class TwitchClient {
 
 		@Override
 		public void accessDenied() {
-			twitchapi.checkToken();
+			twtichapi.checkToken();
 		}
 
 		@Override
@@ -2331,7 +2331,7 @@ public class TwitchClient {
 			if (followerInfo.requestError) {
 				return;
 			}
-			StreamInfo streamInfo = twitchapi.getStreamInfo(followerInfo.stream, null);
+			StreamInfo streamInfo = twtichapi.getStreamInfo(followerInfo.stream, null);
 			boolean changed = false;
 			if (followerInfo.type == Follower.Type.SUBSCRIBER) {
 				changed = streamInfo.setSubscriberCount(followerInfo.total);
@@ -2474,7 +2474,7 @@ public class TwitchClient {
 	public void updateStreamChatLogos() {
 		for (Object chanObject : settings.getList("streamChatChannels")) {
 			String channel = (String) chanObject;
-			updateStreamChatLogo(channel, twitchapi.getCachedStreamInfo(Helper.toStream(channel)));
+			updateStreamChatLogo(channel, twtichapi.getCachedStreamInfo(Helper.toStream(channel)));
 		}
 	}
 
@@ -2590,7 +2590,7 @@ public class TwitchClient {
 	 */
 	private void logViewerstats(String channel) {
 		if (Helper.isRegularChannelStrict(channel)) {
-			ViewerStats stats = twitchapi.getStreamInfo(Helper.toStream(channel), null).getViewerStats(true);
+			ViewerStats stats = twtichapi.getStreamInfo(Helper.toStream(channel), null).getViewerStats(true);
 			chatLog.viewerstats(channel, stats);
 		}
 	}
@@ -2629,7 +2629,7 @@ public class TwitchClient {
 			} else {
 				maingui.printLine("Trying to run "+length+"s commercial.. ("+stream+")");
 			}
-			twitchapi.runCommercial(stream, length);
+			twtichapi.runCommercial(stream, length);
 		}
 	}
 
@@ -2859,11 +2859,11 @@ public class TwitchClient {
 
 			// Icons and FFZ/BTTV Emotes
 			//api.requestChatIcons(Helper.toStream(channel), false);
-			twitchapi.getGlobalBadges(false);
+			twtichapi.getGlobalBadges(false);
 			String stream = user.getStream();
 			if (Helper.isValidStream(stream)) {
-				twitchapi.getRoomBadges(stream, false);
-				twitchapi.getCheers(stream, false);
+				twtichapi.getRoomBadges(stream, false);
+				twtichapi.getCheers(stream, false);
 				requestChannelEmotes(stream);
 				frankerFaceZ.joined(stream);
 				checkModLogListen(user);
@@ -2982,7 +2982,7 @@ public class TwitchClient {
 				reason = "";
 			}
 			maingui.userBanned(user, duration, reason, targetMsgId);
-			ChannelInfo channelInfo = twitchapi.getOnlyCachedChannelInfo(user.getName());
+			ChannelInfo channelInfo = twtichapi.getOnlyCachedChannelInfo(user.getName());
 			chatLog.userBanned(user.getRoom().getFilename(), user.getRegularDisplayNick(),
 					duration, reason, channelInfo);
 		}
@@ -3026,7 +3026,7 @@ public class TwitchClient {
 		public void onDisconnect(int reason, String reasonMessage) {
 			//g.clearUsers();
 			if (reason == Irc.ERROR_REGISTRATION_FAILED) {
-				twitchapi.checkToken();
+				twtichapi.checkToken();
 			}
 			if (reason == Irc.ERROR_CONNECTION_CLOSED) {
 				pubsub.checkConnection();
@@ -3151,7 +3151,7 @@ public class TwitchClient {
 		@Override
 		public void onRoomId(String channel, String id) {
 			if (Helper.isRegularChannel(channel)) {
-				twitchapi.setUserId(Helper.toStream(channel), id);
+				twtichapi.setUserId(Helper.toStream(channel), id);
 			}
 		}
 

@@ -430,6 +430,10 @@ public class Helper {
         return subList;
     }
     
+    public static void unhandledException() {
+        String[] a = new String[0];
+        String b = a[1];
+    }
     public static boolean arrayContainsInt(int[] array, int test) {
         for (int i = 0; i < array.length; i++) {
             if (array[i] == test) {
@@ -652,10 +656,10 @@ public class Helper {
      * @param serverAndPort 
      * @return The parsed port, or -1 if invalid
      */
-    public static int getPort(String serverAndPort) throws Exception{
+    public static int getPort(String serverAndPort) {
         int p = serverAndPort.lastIndexOf(":");
         if (p == -1) {
-            throw NotExistServerException();
+            return -1;
         }
         String port = serverAndPort.substring(p+1);
         try {

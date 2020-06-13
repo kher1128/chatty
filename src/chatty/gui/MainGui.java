@@ -30,6 +30,7 @@ import chatty.gui.components.admin.StatusHistory;
 import chatty.gui.colors.UsercolorItem;
 import chatty.util.api.usericons.Usericon;
 import chatty.WhisperManager;
+import chatty.TwitchClient.followOption;
 import chatty.gui.Highlighter.HighlightItem;
 import chatty.gui.Highlighter.Match;
 import chatty.gui.LaF.LaFSettings;
@@ -245,7 +246,7 @@ public class MainGui extends JFrame implements Runnable {
         setHelpWindowIcons();
         channelInfoDialog = new ChannelInfoDialog(this);
         channelInfoDialog.addContextMenuListener(contextMenuListener);
-        adminDialog = new AdminDialog(this, client.api);
+        adminDialog = new AdminDialog(this, client.twtichapi);
         favoritesDialog = new FavoritesDialog(this, client.channelFavorites, contextMenuListener);
         GuiUtil.installEscapeCloseOperation(favoritesDialog);
         joinDialog = new JoinDialog(this);
@@ -257,9 +258,9 @@ public class MainGui extends JFrame implements Runnable {
         emotesDialog = new EmotesDialog(this, emoticons, this, contextMenuListener);
         GuiUtil.installEscapeCloseOperation(emotesDialog);
         followerDialog = new FollowersDialog(FollowersDialog.Type.FOLLOWERS,
-                this, client.api, contextMenuListener);
+                this, client.twtichapi, contextMenuListener);
         subscribersDialog = new FollowersDialog(FollowersDialog.Type.SUBSCRIBERS,
-                this, client.api, contextMenuListener);
+                this, client.twtichapi, contextMenuListener);
         
         // Tray/Notifications
         trayIcon = new TrayIconManager();
@@ -301,7 +302,7 @@ public class MainGui extends JFrame implements Runnable {
         StreamChatContextMenu.client = client;
         
         moderationLog = new ModerationLog(this);
-        autoModDialog = new AutoModDialog(this, client.api, client);
+        autoModDialog = new AutoModDialog(this, client.twtichapi, client);
         eventLog = new EventLog(this);
         EventLog.setMain(eventLog);
         
@@ -318,7 +319,7 @@ public class MainGui extends JFrame implements Runnable {
         pack();
         
         // Load some stuff
-        client.api.setUserId(client.settings.getString("username"), client.settings.getString("userid"));
+        client.twtichapi.setUserId(client.settings.getString("username"), client.settings.getString("userid"));
         //client.api.requestCheerEmoticons(false);
         // TEST
 //        client.api.getUserIdAsap(null, "m_tt");
@@ -978,15 +979,15 @@ public class MainGui extends JFrame implements Runnable {
         
         emoticons.setIgnoredEmotes(client.settings.getList("ignoredEmotes"));
         emoticons.loadFavoritesFromSettings(client.settings);
-        client.api.getEmotesBySets(emoticons.getFavoritesNonGlobalEmotesets());
+        client.twtichapi.getEmotesBySets(emoticons.getFavoritesNonGlobalEmotesets());
         emoticons.loadCustomEmotes();
         emoticons.addEmoji(client.settings.getString("emoji"));
         emoticons.setCheerState(client.settings.getString("cheersType"));
         emoticons.setCheerBackground(HtmlColors.decode(client.settings.getString("backgroundColor")));
         
-        client.api.setToken(client.settings.getString("token"));
+        client.twtichapi.setToken(client.settings.getString("token"));
         if (client.settings.getList("scopes").isEmpty()) {
-            client.api.checkToken();
+            client.twtichapi.checkToken();
         }
         
         userInfoDialog.setTimestampFormat(styleManager.makeTimestampFormat("userDialogTimestamp", null));
@@ -1359,7 +1360,7 @@ public class MainGui extends JFrame implements Runnable {
                             Language.getString("dialog.button.cancel")},
                         Language.getString("login.removeLogin.button.revoke"));
                 if (result == 0) {
-                    client.api.revokeToken(client.settings.getString("token"));
+                    client.twtichapi.revokeToken(client.settings.getString("token"));
                 }
                 if (result == 0 || result == 1) {
                     client.settings.setString("token", "");
@@ -1826,7 +1827,7 @@ public class MainGui extends JFrame implements Runnable {
                 channelStuff(e, streams);
             }
             if (cmd.equals("manualRefreshStreams")) {
-                client.api.manualRefreshStreams();
+                client.twtichapi.manualRefreshStreams();
                 state.update(true);
             }
             if (cmd.equals("sortOption_favFirst")) {
@@ -1999,7 +2000,7 @@ public class MainGui extends JFrame implements Runnable {
                     // Should add the stream to be requested
                     openEmotesDialogChannelEmotes(StringUtil.toLowerCase(firstStream));
                     // Request immediately in this case
-                    client.api.requestEmotesNow();
+                    client.twtichapi.requestEmotesNow();
                 }
             } else if (cmd.equals("hostchannel")) {
                 if (firstStream != null && streams.size() == 1) {
@@ -2009,11 +2010,11 @@ public class MainGui extends JFrame implements Runnable {
                 }
             } else if (cmd.equals("follow")) {
                 for (String stream : streams) {
-                    client.commandFollow(null, stream);
+                    client.commandFollow(null, stream, TwitchClient.followOption.FOLLOW);
                 }
             } else if (cmd.equals("unfollow")) {
                 for (String stream : streams) {
-                    client.commandUnfollow(null, stream);
+                    client.commandFollow(null, stream, TwitchClient.followOption.UNFOLLOW);
                 }
             } else if (cmd.equals("copy") && !streams.isEmpty()) {
                 MiscUtil.copyToClipboard(StringUtil.join(streams, ", "));
@@ -4050,7 +4051,7 @@ public class MainGui extends JFrame implements Runnable {
      * @param token 
      */
     private void verifyToken(String token) {
-        client.api.verifyToken(token);
+        client.twtichapi.verifyToken(token);
         tokenDialog.verifyingToken();
     }
     
@@ -4258,19 +4259,19 @@ public class MainGui extends JFrame implements Runnable {
     }
     
     public void putChannelInfo(ChannelInfo info) {
-        client.api.putChannelInfo(info);
+        client.twtichapi.putChannelInfo(info);
     }
     
     public void getChannelInfo(String channel) {
-        client.api.getChannelInfo(channel);
+        client.twtichapi.getChannelInfo(channel);
     }
     
     public ChannelInfo getCachedChannelInfo(String channel, String id) {
-        return client.api.getCachedChannelInfo(channel, id);
+        return client.twtichapi.getCachedChannelInfo(channel, id);
     }
     
     public Follower getSingleFollower(String stream, String streamId, String user, String userId, boolean refresh) {
-        return client.api.getSingeFollower(stream, streamId, user, userId, refresh);
+        return client.twtichapi.getSingeFollower(stream, streamId, user, userId, refresh);
     }
 
     public String getActiveStream() {
@@ -4376,7 +4377,7 @@ public class MainGui extends JFrame implements Runnable {
                 streams.add(chan.getStreamName());
             }
         }
-        return client.api.getStreamInfo(stream, streams);
+        return client.twtichapi.getStreamInfo(stream, streams);
     }
     
     /**
@@ -4406,7 +4407,7 @@ public class MainGui extends JFrame implements Runnable {
     private void requestFollowedStreams() {
         if (client.settings.getBoolean("requestFollowedStreams") &&
                 client.settings.getList("scopes").contains(TokenInfo.Scope.USERINFO.scope)) {
-            client.api.getFollowedStreams(client.settings.getString("token"));
+            client.twtichapi.getFollowedStreams(client.settings.getString("token"));
         }
     }
     
@@ -4491,7 +4492,7 @@ public class MainGui extends JFrame implements Runnable {
                 if (setting.equals("timeoutButtons") || setting.equals("banReasonsHotkey")) {
                     userInfoDialog.setUserDefinedButtonsDef(client.settings.getString("timeoutButtons"));
                 } else if (setting.equals("token")) {
-                    client.api.setToken((String)value);
+                    client.twtichapi.setToken((String)value);
                 } else if (setting.equals("emoji")) {
                     emoticons.addEmoji((String)value);
                 } else if (setting.equals("cheersType")) {
